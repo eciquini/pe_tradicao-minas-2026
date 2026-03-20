@@ -17,9 +17,6 @@ jobs:
       - name: Gerar dashboard
         run: python update_dashboard.py
         env:
-          MS_CLIENT_ID: ${{ secrets.MS_CLIENT_ID }}
-          MS_CLIENT_SECRET: ${{ secrets.MS_CLIENT_SECRET }}
-          MS_FILE_ID: ${{ secrets.MS_FILE_ID }}
           MS_REFRESH_TOKEN: ${{ secrets.MS_REFRESH_TOKEN }}
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
