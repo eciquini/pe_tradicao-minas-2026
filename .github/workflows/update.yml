@@ -1,0 +1,41 @@
+name: Atualizar Dashboard
+
+on:
+  schedule:
+    - cron: '0 * * * *'
+  workflow_dispatch:
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - run: pip install openpyxl
+
+      - name: Gerar dashboard
+        env:
+          MS_REFRESH_TOKEN: ${{ secrets.MS_REFRESH_TOKEN }}
+        run: python update_dashboard.py
+
+      - name: Salvar novo refresh token
+        run: |
+          if [ -f refresh_token.txt ]; then
+            gh secret set MS_REFRESH_TOKEN < refresh_token.txt
+            rm refresh_token.txt
+          fi
+        env:
+          GH_TOKEN: ${{ secrets.PAT_TOKEN }}
+
+      - name: Deploy GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./
+          include_files: index.html
